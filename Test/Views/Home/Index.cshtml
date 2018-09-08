@@ -1,0 +1,112 @@
+﻿@model Test.ViewModels.InvoiceViewModelManager
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-3">
+        @Html.Partial("Partials/DisplayInvoices", Model.DisplayViewModel)
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        @Html.Partial("Partials/CreateNewInvoice", Model.AddViewModel)
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+
+        var DisplayInformation = function (id) {
+            var url = "/Home/Details/" + id;
+            $("#myModalBody").load(url, function () {
+                $("#myModal").modal("show");
+            });
+        }
+
+        $("#myConfirmModal").on("submit", "#SaveInvoiceForm", function (e) {
+            e.preventDefault();  // prevent standard form submission
+            var formData = $("#SaveInvoiceForm").serialize();
+            var routeUrl = "/Home/IndexPost/";
+
+            var token = $('input[name=__RequestVerificationToken]').val();
+            console.log(token);
+
+
+            $.ajax({
+                type: "POST",
+                url: routeUrl,
+                data: formData,
+                success: function (data) {
+                    if (`@TempData["Errors"]` == null) {
+                        alert("sve je oke");
+                    }
+                    $("#myConfirmModalBody").html(data);
+                    $("#myConfirmModal").modal("show");
+                },
+                error: function () {
+                    console.log("Ajax call failed");
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $("#myConfirmModal").on("submit", "#SaveInvoiceForm", function (e) {
+                e.preventDefault();  // prevent standard form submission
+                var formData = $("#SaveInvoiceForm").serialize();
+                var routeUrl = "/Home/Index/";
+
+                var token = $('input[name=__RequestVerificationToken]').val();
+                console.log(token);
+
+
+                $.ajax({
+                    type: "POST",
+                    url: routeUrl,
+                    data: formData,
+                    success: function (data) {
+                        $("#myConfirmModal").modal("hide");
+                        location.reload(); 
+                    },
+                    error: function (data, status, err) {
+                        $("#myConfirmModalBody").html(data.responseText);
+                        $("#myConfirmModal").modal("show");
+                    }
+                });
+            });
+
+            $("#confirmInvoice").click(function (e) {
+                e.preventDefault();
+
+                var formData = $("#createNewInvoice").serialize();
+                var routeUrl = "/Home/ConfirmSave/";
+
+                var token = $('input[name=__RequestVerificationToken]').val();
+                console.log(token);
+
+
+                $.ajax({
+                    type: "POST",
+                    url: routeUrl,
+                    data: formData,
+                    success: function (data) {
+                        $("#myConfirmModalBody").html(data);
+                        $("#myConfirmModal").modal("show");
+                    },
+                    error: function (data, status, err) {
+                        console.log(data.responseText);
+                        $("#myConfirmModalBody").html(data.responseText);
+                        $("#myConfirmModal").modal("show");
+                    }
+                });
+            });
+
+
+        });
+
+    </script>
+}
+

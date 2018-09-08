@@ -1,0 +1,69 @@
+﻿@model Test.ViewModels.InvoiceDisplayViewModel
+@using PagedList.Mvc;
+
+<h1 class="text-center">Display all invoices</h1>
+
+@if (ViewBag.SearchError != null)
+{
+    <h3 class="text-danger text-center">@ViewBag.SearchError</h3>
+}
+
+@using (Html.BeginForm("Index", "Home", FormMethod.Get, new { @class = "form-inline" }))
+{
+    <div>
+        <p>
+            @Html.DropDownListFor(x => x.SearchType, Test.ViewModels.InvoiceDisplayViewModel.SearchTypes, "Select Type", new { @class = "form-control" }) @Html.TextBoxFor(x => x.SearchString, new { @class = "form-control" })
+            <input type="submit" class="btn btn-primary" value="Search" />
+            @Html.ValidationMessageFor(x => x.SearchString, "", new { @class = "text-danger" })
+        </p>
+    </div>
+}
+<table class="table table-hover">
+    <thead>
+    <th>#</th>
+    <th>Company name</th>
+    <th>Company address</th>
+    <th>Nubmer of items</th>
+    <th>Total price</th>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.InvoicesList)
+        {
+            <tr onclick="DisplayInformation(@item.Id)" style="cursor: pointer;">
+                <td>@item.Id</td>
+                <td>@item.Person.Name</td>
+                <td>@item.Person.Address</td>
+                <td>@Model.GetTotalItemsCount(item)</td>
+                <td>@Model.GetTotalPrice(item) din</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="10">
+                @Html.PagedListPager(Model.InvoicesList, pageIndex => Url.Action("Index", new { pageIndex }))
+            </td>
+
+        </tr>
+
+    </tfoot>
+
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title text-center" id="myModalLabel">Invoice details</h4>
+            </div>
+            <div class="modal-body" id="myModalBody">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

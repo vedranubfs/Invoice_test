@@ -1,0 +1,99 @@
+﻿@model Test.ViewModels.InvoiceAddViewModel
+
+
+<form id="SaveInvoiceForm">
+    @Html.AntiForgeryToken()
+    <div>
+        <dl class="dl-horizontal">
+            <dt>
+                Company Name:
+                @Html.HiddenFor(m => m.SelectedPersonId)
+            </dt>
+
+            <dd>
+                @Model.SelectedPerson.Name
+            </dd>
+
+            <dt>
+                Company address:
+            </dt>
+
+            <dd>
+                @Model.SelectedPerson.Address
+            </dd>
+
+
+            @if (Model.SelectedPerson.PaymentDeadline == 0)
+            {
+                <dt>
+                    Please enter payment deadline date(in days):
+                </dt>
+
+                <dd>
+                    @Html.EditorFor(m => m.PaymentDay)
+                </dd>
+            }
+            else
+            {
+                <dt>
+                    Company payment deadline date :
+
+                </dt>
+                <dd>
+                    @DateTime.Now.AddDays(Model.SelectedPerson.PaymentDeadline)
+                    @Html.HiddenFor(m => m.PaymentDay)
+                </dd>
+
+            }
+            <dt>
+                Is product returned:
+            </dt>
+            <dd>
+                @Html.CheckBoxFor(m => m.IsProductReturned)
+            </dd>
+        </dl>
+
+
+        <hr />
+        <h4 class="text-center">Products</h4>
+        <table class="table table-bordered">
+            <thead>
+            <th>#</th>
+            <th>Product name</th>
+            <th>Product quantity</th>
+            <th>Product price</th>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Products.Count; i++)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@Model.Products[i].Name</td>
+                        <td>
+                            <select name="SelectedProductsQty[]" class="form-control">
+                                @for (int x = 1; x < Model.SelectedProductsQty[i] + 1; x++)
+                                {
+                                    <option value="@x">@x</option>
+
+                                }
+
+                            </select>
+                        </td>
+                        <td>@Model.Products[i].Price</td>
+                    </tr>
+                    <input type="hidden" name="SelectedProductsIds[]" value="@Model.Products[i].Id" />
+                }
+
+
+            </tbody>
+            <tfoot>
+                @*<tr>*@
+                    <td colspan="4"><button id="confirmInvoice1" class="btn btn-success pull-right">Save</button></td>
+                @*</tr>*@
+
+            </tfoot>
+        </table>
+
+    </div>
+</form>
+

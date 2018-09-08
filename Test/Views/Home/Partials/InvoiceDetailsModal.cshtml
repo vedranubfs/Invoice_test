@@ -1,0 +1,63 @@
+﻿@model Test.ViewModels.InvoiceDisplayViewModel
+
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            Company name:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Invoice.Person.Name)
+        </dd>
+
+        <dt>
+            Invoice created date:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Invoice.Date)
+        </dd>
+
+        <dt>
+            Invoice deadline:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Invoice.PaymentDay)
+        </dd>
+        <hr />
+        <h4 class="text-center">Products</h4>
+        <table class="table table-bordered">
+            <thead>
+            <th>#</th>
+            <th>Product name</th>
+            <th>Product quantity</th>
+            <th>Product price</th>
+            <th>Products total price</th>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Invoice.InvoiceProducts)
+                {
+                    <tr>
+                        <td>@item.Product.Id</td>
+                        <td>@item.Product.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Product.Price</td>
+                        <td>@Model.GetTotalPriceForSingleProduct(item.Product,item.Quantity)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @*<tr>*@
+                    <td colspan="5">
+                        <strong class="pull-right">Total price: @Model.GetTotalPrice(Model.Invoice)</strong>
+                    </td>
+
+                @*</tr>*@
+
+            </tfoot>
+
+        </table>
+
+    </dl>
+</div>
