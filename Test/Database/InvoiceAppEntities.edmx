@@ -13,6 +13,7 @@
           <Property Name="PersonId" Type="int" Nullable="false" />
           <Property Name="Date" Type="date" Nullable="false" />
           <Property Name="PaymentDay" Type="date" Nullable="false" />
+          <Property Name="IsProductReturned" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="InvoiceProduct">
           <Key>
@@ -64,7 +65,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_InvoiceProduct_Invoice">
-          <End Role="Invoice" Type="Self.Invoice" Multiplicity="1" />
+          <End Role="Invoice" Type="Self.Invoice" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="InvoiceProduct" Type="Self.InvoiceProduct" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Invoice">
@@ -120,6 +123,7 @@
           <Property Name="PaymentDay" Type="DateTime" Nullable="false" Precision="0" />
           <NavigationProperty Name="Person" Relationship="Self.FK_Invoice_Person" FromRole="Invoice" ToRole="Person" />
           <NavigationProperty Name="InvoiceProducts" Relationship="Self.FK_InvoiceProduct_Invoice" FromRole="Invoice" ToRole="InvoiceProduct" />
+          <Property Name="IsProductReturned" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="InvoiceProduct">
           <Key>
@@ -226,6 +230,7 @@
           <EntitySetMapping Name="Invoices">
             <EntityTypeMapping TypeName="InvoiceAppModel.Invoice">
               <MappingFragment StoreEntitySet="Invoice">
+                <ScalarProperty Name="IsProductReturned" ColumnName="IsProductReturned" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
                 <ScalarProperty Name="Date" ColumnName="Date" />

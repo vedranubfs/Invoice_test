@@ -24,6 +24,7 @@ namespace Test.Database
         public int PersonId { get; set; }
         public System.DateTime Date { get; set; }
         public System.DateTime PaymentDay { get; set; }
+        public bool IsProductReturned { get; set; }
     
         public virtual Person Person { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

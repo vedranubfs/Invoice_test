@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Test.Database;
 using PagedList;
 using System.Web.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 
 namespace Test.ViewModels
 {
@@ -27,9 +23,18 @@ namespace Test.ViewModels
         };
 
 
-        public int GetTotalItemsCount(Invoice invoice)
+        public string GetTotalItemsCount(Invoice invoice)
         {
-            return invoice.InvoiceProducts.Count;
+            string tmp = "";
+            if (invoice.IsProductReturned)
+            {
+                tmp = ($"-{invoice.InvoiceProducts.Count}");
+            }
+            else
+            {
+                tmp = invoice.InvoiceProducts.Count.ToString();
+            }
+            return tmp;
         }
 
         public decimal GetTotalPrice(Invoice invoice)

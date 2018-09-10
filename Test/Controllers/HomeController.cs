@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Test.Data;
 using Test.Database;
 using Test.ViewModels;
 using PagedList;
+using Test.Data.Interfaces;
 
 namespace Test.Controllers
 {
     public class HomeController : Controller
     {
-        UnitOfWork unitOfWork = new UnitOfWork(new InvoiceAppEntities());
+        private IUnitOfWork unitOfWork;
+
+        public HomeController(IUnitOfWork unitOfWork)
+        {
+            this.unitOfWork = unitOfWork;
+        }
 
         public ActionResult Index(int pageIndex = 1, string searchType = "", string searchString = "")
         {
-            List<Invoice> invoices = unitOfWork.InvoiceRepository.Find(orderBy: g => g.OrderByDescending(gg => gg.Date)).ToList();
+            List<Invoice> invoices = unitOfWork.InvoiceRepository.GetAll().OrderBy(g => g.PaymentDay).ToList();
             if (!string.IsNullOrEmpty(searchString))
             {
                 DateTime date;
@@ -37,7 +41,7 @@ namespace Test.Controllers
                         }
                         break;
                     case "CreationDate":
-                        if(DateTime.TryParse(searchString,out date))
+                        if (DateTime.TryParse(searchString, out date))
                         {
                             invoices = unitOfWork.InvoiceRepository.GetAll().Where(g => g.Date == DateTime.Parse(searchString)).ToList().OrderByDescending(i => i.Date).ToList();
                         }
@@ -68,14 +72,11 @@ namespace Test.Controllers
             viewManager.AddViewModel = addViewModel;
             viewManager.DisplayViewModel = displayViewModel;
 
-            ViewBag.Errors = TempData["Errors"];
-            ViewBag.SuccessMessage = TempData["SuccessMessage"];
-
             return View(viewManager);
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public ActionResult ConfirmSave(InvoiceAddViewModel model)
         {
             ModelState.Remove("PaymentDay");
@@ -115,7 +116,7 @@ namespace Test.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(InvoiceAddViewModel model)
         {
-            
+
             if (ModelState.IsValid)
             {
                 Person person = unitOfWork.PersonRepository.Get(model.SelectedPersonId);
@@ -125,27 +126,29 @@ namespace Test.Controllers
                     paymentDeadline = model.PaymentDay;
                 else
                     paymentDeadline = person.PaymentDeadline;
-               
+
 
                 Invoice newInvoice = new Invoice();
                 newInvoice.Date = DateTime.Now;
                 newInvoice.PaymentDay = newInvoice.Date.AddDays(paymentDeadline);
                 newInvoice.Person = person;
+                newInvoice.IsProductReturned = model.IsProductReturned;
+
                 for (int i = 0; i < model.SelectedProductsIds.Length; i++)
                 {
                     int tmpProductId = model.SelectedProductsIds[i];
                     Product product = unitOfWork.ProductRepository.Get(tmpProductId);
-                    if (model.IsProductReturned) // checking if product is returned to me or solded
-                    {
-                        product.Quantity += model.SelectedProductsQty[i];
-                    }
-                    else
-                    {
-                        product.Quantity -= model.SelectedProductsQty[i];
-                    }
-
                     if (product != null)
                     {
+                        if (model.IsProductReturned) // checking if product is returned to me or solded
+                        {
+                            product.Quantity += model.SelectedProductsQty[i];
+                        }
+                        else
+                        {
+                            product.Quantity -= model.SelectedProductsQty[i];
+                        }
+
                         newInvoice.InvoiceProducts.Add(new InvoiceProduct() { Product = product, Quantity = model.SelectedProductsQty[i] });
                     }
                     else

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Web.Mvc;
 using Test.Database;
-using Test.Helpers;
 namespace Test.ViewModels
 {
     public class InvoiceAddViewModel
@@ -23,10 +20,9 @@ namespace Test.ViewModels
 
         public Person SelectedPerson { get; set; }
 
-        [Range(1,1000)]
+        [Range(1,1000, ErrorMessage = "You need to set payment day for this company")]
         public int PaymentDay { get; set; } = 0;
 
-        [Required(ErrorMessage = "This field is required")]
         public bool IsProductReturned { get; set; }
 
         public InvoiceAddViewModel()
